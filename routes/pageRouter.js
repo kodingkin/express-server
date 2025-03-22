@@ -1,7 +1,7 @@
 const { Router} = require('express');
 const path = require('path');
 
-const getPage = require('../controllers/pageController');
+const getPage = require('../controllers/getPage');
 
 // create the router
 const pageRouter = Router();
