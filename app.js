@@ -17,7 +17,7 @@ app.set("view engine", "ejs");
 app.use(logRequest);
 
 // ready for non html obect
-app.use(express.static(__dirname));
+app.use(express.static(path.join(__dirname, 'public')));
 
 // use router to handle
 app.use("/", pageRouter);
