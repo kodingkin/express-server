@@ -2,9 +2,19 @@ const express = require("express");
 const path = require('path');
 const app = express();
 
-const pageRouter = require('./routes/pageRouter');
+const logRequest = require('./middleware/logRequest.js');
+const logServedPath = require('./middleware/servedPath.js');
+const pageRouter = require('./routes/pageRouter.js');
+const error404 = require('./errors/404.js');
+const catchError = require('./errors/catch.js');
 
 const PORT = 3000;
+
+app.set("views", path.join(__dirname, "views"));
+app.set("view engine", "ejs");
+
+// log every request
+app.use(logRequest);
 
 // ready for non html obect
 app.use(express.static(__dirname));
@@ -12,24 +22,15 @@ app.use(express.static(__dirname));
 // use router to handle
 app.use("/", pageRouter);
 
+// log the served path
+app.use(logServedPath);
+
 // 404 catch-all for non-routed paths
-app.use((req, res) => {
-    console.log(`404: ${req.url} not found`);
-    res.status(404).send('Page not found!');
+app.use(error404);
+
+// process all the thrown error
+app.use(catchError);
+
+app.listen(PORT, () => {
+    console.log(`Server running on http://localhost:${PORT}`);
 });
-
-// HTTPS setup: Load SSL certs
-// const sslOptions = {
-//     key: fs.readFileSync(path.join(__dirname, 'key.pem')),  // Private key
-//     cert: fs.readFileSync(path.join(__dirname, 'cert.pem')) // Public cert
-// };
-
-// Start HTTP server
-http.createServer(app).listen(HTTP_PORT, () => {
-    console.log(`HTTP server running on http://localhost:${HTTP_PORT}`);
-});
-
-// Start HTTPS server
-// https.createServer(sslOptions, app).listen(HTTPS_PORT, () => {
-//     console.log(`HTTPS server running on https://localhost:${HTTPS_PORT}`);
-// });
